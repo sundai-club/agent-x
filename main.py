@@ -24,7 +24,7 @@ creative_director = autogen.AssistantAgent("CreativeDirector", llm_config=llm_co
 subreddit_agent = autogen.AssistantAgent("SubredditAgent", llm_config=llm_config, system_message="I locate subreddits based on the provided keywords.")
 post_agent = autogen.AssistantAgent("PostAgent", llm_config=llm_config, system_message="I retrieve and analyze posts from the identified subreddits.")
 data_analyst = autogen.AssistantAgent("DataAnalyst", llm_config=llm_config, system_message="I analyze the posts to extract marketing insights.")
-reviewer = autogen.AssistantAgent("Reviewer", llm_config=llm_config, system_message="I ensure the content complies with standards and regulations.")
+reviewer = autogen.AssistantAgent("Reviewer", llm_config=llm_config, system_message="I ensure the content is interesting and useful for developing the product.")
 
 # Main chat and manager
 groupchat = autogen.GroupChat(
@@ -37,6 +37,11 @@ groupchat = autogen.GroupChat(
 
 groupchat_manager = autogen.GroupChatManager(groupchat=groupchat, llm_config=llm_config)
 
+# Function to handle the output to a file
+def output_to_file(filename, data):
+    with open(filename, 'a') as file:
+        file.write(json.dumps(data, indent=4) + '\n')
+
 # Task execution using nested chats
 def execute_marketing_analysis(task_description):
     leader.initiate_chat(groupchat_manager, message=f"Initiate project: {task_description}", max_turns=1)
@@ -47,15 +52,15 @@ def execute_marketing_analysis(task_description):
     # pull out the comments from a post url
     # Output messages to file
     output_to_file('groupchat_messages.json', groupchat.messages)
-    
+
     analysis = data_analyst.initiate_chat(groupchat_manager, message=f"Analyze posts: {posts}.")
     review = reviewer.initiate_chat(groupchat_manager, message="Review the final report.", summary_method="last_msg")
     return review
 
 # Example task
 task_description = "Identify the best posts from subreddits talking about beekeeping products."
-final_report = execute_marketing_analysis(task_description)
-print(final_report)
+execute_marketing_analysis(task_description)
+# print(final_report)
 
 
 
