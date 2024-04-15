@@ -1,3 +1,27 @@
+"""
+This module provides functionality to autonomously crawl and scrape Reddit posts using
+selenium and BeautifulSoup. It uses autonomous agents configured via the autogen library to handle specific tasks related
+to web searching on Reddit, including extracting post contents and comments, and gathering URLs for posts based on search
+keywords. It employs headless Chrome browsers for web navigation, ensuring that operations can be conducted without
+the need for a GUI.
+
+Classes:
+    AssistantAgent: Manages and executes operations for scraping Reddit data.
+    UserProxyAgent: Proxies user inputs and manages conversation states and terminations.
+
+Functions:
+    crawl_reddit_imp(url: str) -> str: Crawls a specific Reddit URL to extract detailed post data.
+    crawl_reddit_post_url_imp(keywords: str) -> list: Searches Reddit with specified keywords and extracts post URLs.
+    crawl_reddit(url: Annotated[str, "link to the reddit post"]) -> str: Agent-registered function to scrape a Reddit post.
+    crawl_reddit_post_url(keywords: Annotated[str, "keywords to search for"]) -> str: Agent-registered function to find Reddit posts by keywords.
+
+Dependencies:
+    pydantic: Used for data parsing and validation through BaseModel.
+    selenium: Utilized for browser automation tasks.
+    BeautifulSoup: Employed for parsing HTML contents.
+    autogen: Provides framework support for autonomous agents.
+"""
+
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -37,6 +61,20 @@ user_proxy = autogen.UserProxyAgent(
 )
 
 def crawl_reddit_imp(url: str):
+    """
+    Performs a detailed crawl of a specific Reddit post URL using Selenium with a headless Chrome browser.
+    It extracts the title, content, and author of the post, as well as all associated comments.
+
+    Args:
+        url (str): The URL of the Reddit post to be crawled.
+
+    Returns:
+        str: A formatted string containing the main post's title, author, content, and all comments with their respective authors.
+
+    Raises:
+        WebDriverException: An error occurred with the Selenium WebDriver during the process.
+        Exception: Generic exceptions could include errors during HTML parsing or during web navigation.
+    """
     print("Crawling Reddit post at: ", url)
     # Create a new instance of the Firefox driver
     options = ChromeOptions()
@@ -82,6 +120,20 @@ def crawl_reddit_imp(url: str):
     return allcontent
 
 def crawl_reddit_post_url_imp(keywords: str):
+    """
+    Searches Reddit for posts matching specified keywords and returns a list of URLs for those posts. This function uses
+    Selenium with a headless Chrome browser to navigate the Reddit search page and parse results using BeautifulSoup.
+
+    Args:
+        keywords (str): The keywords to use for searching posts on Reddit.
+
+    Returns:
+        list: A list of unique URLs pointing to Reddit posts that match the search criteria.
+
+    Raises:
+        WebDriverException: An error occurred with the Selenium WebDriver during the process.
+        Exception: Generic exceptions could include errors during HTML parsing or during web navigation.
+    """
     url = "https://www.reddit.com/search/?q=" + keywords.replace(" ", "+")
     print("Crawling Reddit posts at: ", url)
     # Create a new instance of the Firefox driver
@@ -121,6 +173,16 @@ def crawl_reddit_post_url_imp(keywords: str):
 def crawl_reddit(
     url: Annotated[str, "link to the reddit post"],
 ) -> str:
+    """
+    Facilitates scraping of a specific Reddit post's content by invoking the `crawl_reddit_imp` function.
+    This function is designed to be registered with an autonomous agent for execution.
+
+    Args:
+        url (Annotated[str, "link to the reddit post"]): The URL of the Reddit post to be scraped.
+
+    Returns:
+        str: The detailed content of the Reddit post including post details and comments.
+    """
     return crawl_reddit_imp(url)
 
 @user_proxy.register_for_execution()
@@ -128,6 +190,16 @@ def crawl_reddit(
 def crawl_reddit_post_url(
     keywords: Annotated[str, "keywords to search for"],
 ) -> str:
+    """
+    Facilitates the search of Reddit posts by keywords and retrieves their URLs by invoking the `crawl_reddit_post_url_imp` function.
+    This function is designed to be registered with an autonomous agent for execution.
+
+    Args:
+        keywords (Annotated[str, "keywords to search for"]): Keywords to search for on Reddit.
+
+    Returns:
+        list: A list of URLs to the Reddit posts that match the specified keywords.
+    """
     return crawl_reddit_post_url_imp(keywords)
 
 print(chatbot.llm_config["tools"])
