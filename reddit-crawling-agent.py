@@ -36,40 +36,6 @@ user_proxy = autogen.UserProxyAgent(
     max_consecutive_auto_reply=10,
 )
 
-def crawl_reddit_post_url(url: str):
-    print("Crawling Reddit posts at: ", url)
-    # Create a new instance of the Firefox driver
-    options = ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
-    driver = webdriver.Chrome(options=options)
-
-    # Load a URL
-    driver.get(url)
-    # Get the HTML content
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
-
-    # Now you can use the soup object to parse and manipulate the HTML content
-    # For example, you can find elements by tag name, class, etc.
-
-    # Close the browser
-    driver.quit()
-
-    allcontent = []
-
-    # Find all <p> elements and concatenate their content into a string
-    links = soup.find_all('a')
-    for link in links:
-        if link.get('href').startswith("/r/") and "/comments/" in link.get('href'):
-            found_url = "https://www.reddit.com" + link.get('href')
-            allcontent.append(found_url)
-    
-    return list(set(allcontent))
-
 def crawl_reddit_imp(url: str):
     print("Crawling Reddit post at: ", url)
     # Create a new instance of the Firefox driver
@@ -115,6 +81,41 @@ def crawl_reddit_imp(url: str):
     
     return allcontent
 
+def crawl_reddit_post_url_imp(keywords: str):
+    url = "https://www.reddit.com/search/?q=" + keywords.replace(" ", "+")
+    print("Crawling Reddit posts at: ", url)
+    # Create a new instance of the Firefox driver
+    options = ChromeOptions()
+    options.add_argument("--window-size=1920,1080")
+    options.add_argument("--headless=new")
+    options.add_argument("--disable-gpu")
+    options.add_argument(
+        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+    driver = webdriver.Chrome(options=options)
+
+    # Load a URL
+    driver.get(url)
+    # Get the HTML content
+    html_content = driver.page_source
+    soup = BeautifulSoup(html_content, 'html.parser')
+
+    # Now you can use the soup object to parse and manipulate the HTML content
+    # For example, you can find elements by tag name, class, etc.
+
+    # Close the browser
+    driver.quit()
+
+    allcontent = []
+
+    # Find all <p> elements and concatenate their content into a string
+    links = soup.find_all('a')
+    for link in links:
+        if link.get('href').startswith("/r/") and "/comments/" in link.get('href'):
+            found_url = "https://www.reddit.com" + link.get('href')
+            allcontent.append(found_url)
+    
+    return list(set(allcontent))
+
 @user_proxy.register_for_execution()
 @chatbot.register_for_llm(description="scrawl and scrap reddit post content")
 def crawl_reddit(
@@ -122,10 +123,17 @@ def crawl_reddit(
 ) -> str:
     return crawl_reddit_imp(url)
 
+@user_proxy.register_for_execution()
+@chatbot.register_for_llm(description="get the link to the reddit posts")
+def crawl_reddit_post_url(
+    keywords: Annotated[str, "keywords to search for"],
+) -> str:
+    return crawl_reddit_post_url_imp(keywords)
+
 print(chatbot.llm_config["tools"])
 
 with Cache.disk() as cache:
     # start the conversation
     res = user_proxy.initiate_chat(
-        chatbot, message="can you crawl https://www.reddit.com/r/ETFs/comments/13eoe68/etffund_comparison_tool/", summary_method="reflection_with_llm", cache=cache
+        chatbot, message="find reddit posts related to beekeeping and give me the summary", summary_method="reflection_with_llm", cache=cache
     )
