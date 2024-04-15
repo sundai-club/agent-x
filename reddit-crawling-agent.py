@@ -50,6 +50,9 @@ chatbot = autogen.AssistantAgent(
     name="chatbot",
     system_message="For crawling or scraping reddit, only use the functions you have been provided with. Reply TERMINATE when the task is done.",
     llm_config=llm_config,
+    code_execution_config={
+         "use_docker": False,
+    },
 )
 
 # create a UserProxyAgent instance named "user_proxy"
@@ -58,6 +61,9 @@ user_proxy = autogen.UserProxyAgent(
     is_termination_msg=lambda x: x.get("content", "") and x.get("content", "").rstrip().endswith("TERMINATE"),
     human_input_mode="NEVER",
     max_consecutive_auto_reply=10,
+    code_execution_config={
+         "use_docker": False,
+    },
 )
 
 def crawl_reddit_imp(url: str):
