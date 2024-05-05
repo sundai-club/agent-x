@@ -178,8 +178,11 @@ def crawl_reddit_post_url_imp(keywords: str):
     links = soup.find_all('a')
     for link in links:
         if link.get('href').startswith("/r/") and "/comments/" in link.get('href'):
+            print("found link: ", link.get('href'))
             found_url = "https://www.reddit.com" + link.get('href')
             allcontent.append(found_url)
+        else:
+            print("INVALID LINK??: ", link.get('href'))
 
     return list(set(allcontent))
 
