@@ -158,11 +158,9 @@ def crawl_reddit_post_url_imp(keywords: str):
         driver.get(url)
         # Get the HTML content
         html_content = driver.page_source
-        print("html content:")
-        print(html_content)
+
         soup = BeautifulSoup(html_content, 'html.parser')
-        print("soup:")
-        print(soup)
+
     except Exception as e:
         print("Error in crawling Reddit posts at: ", url)
         print(e)
