@@ -21,7 +21,7 @@ Dependencies:
     BeautifulSoup: Employed for parsing HTML contents.
     autogen: Provides framework support for autonomous agents.
 """
-
+import time
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -156,6 +156,9 @@ def crawl_reddit_post_url_imp(keywords: str):
 
         # Load a URL
         driver.get(url)
+
+        time.sleep(3)
+
         # Get the HTML content
         html_content = driver.page_source
 
