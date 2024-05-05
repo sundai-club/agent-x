@@ -148,7 +148,7 @@ def crawl_reddit_post_url_imp(keywords: str):
     try:
         options = ChromeOptions()
         options.add_argument("--window-size=1920,1080")
-        options.add_argument("--headless=new")
+        options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument(
             "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
@@ -158,7 +158,11 @@ def crawl_reddit_post_url_imp(keywords: str):
         driver.get(url)
         # Get the HTML content
         html_content = driver.page_source
+        print("html content:")
+        print(html_content)
         soup = BeautifulSoup(html_content, 'html.parser')
+        print("soup:")
+        print(soup)
     except Exception as e:
         print("Error in crawling Reddit posts at: ", url)
         print(e)
