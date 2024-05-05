@@ -209,9 +209,16 @@ def crawl_reddit_post_url(
     return crawl_reddit_post_url_imp(keywords)
 
 print(chatbot.llm_config["tools"])
+    
+def reddit_analysis(task_description):
+    with Cache.disk() as cache:
+        # start the conversation
+        res = user_proxy.initiate_chat(
+            chatbot, message="find reddit posts related to beekeeping and give me the summary", summary_method="reflection_with_llm", cache=cache
+        )
+    return res.chat_history
 
-with Cache.disk() as cache:
-    # start the conversation
-    res = user_proxy.initiate_chat(
-        chatbot, message="find reddit posts related to beekeeping and give me the summary", summary_method="reflection_with_llm", cache=cache
-    )
+if __name__ == '__main__':
+    # Example task
+    task_description = "Identify the best posts from subreddits talking about beekeeping products."
+    reddit_analysis(task_description)

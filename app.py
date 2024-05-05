@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from fastapi import FastAPI
-from main import execute_marketing_analysis
+from reddit_crawling_agent import reddit_analysis
 
 app = FastAPI()
 
@@ -36,4 +36,4 @@ def post_message(item: Item):
 
 @app.post("/post-message")
 def post_message(item: Item):
-    return {"market_analysis": execute_marketing_analysis(item.message)}
+    return {"market_analysis": reddit_analysis(item.message)}
