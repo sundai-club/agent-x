@@ -214,11 +214,11 @@ def reddit_analysis(task_description):
     with Cache.disk() as cache:
         # start the conversation
         res = user_proxy.initiate_chat(
-            chatbot, message="find reddit posts related to beekeeping and give me the summary", summary_method="reflection_with_llm", cache=cache
+            chatbot, message=task_description, summary_method="reflection_with_llm", cache=cache
         )
     return res.chat_history
 
 if __name__ == '__main__':
     # Example task
-    task_description = "Identify the best posts from subreddits talking about beekeeping products."
+    task_description = "find reddit posts related to beekeeping and give me the summary with the link to the posts"
     reddit_analysis(task_description)
