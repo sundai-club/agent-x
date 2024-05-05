@@ -4,3 +4,5 @@ requests-html
 lxml_html_clean
 selenium
 pyautogen>=0.2.3
+fastapi
+uvicorn
