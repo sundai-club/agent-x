@@ -21,7 +21,7 @@ Dependencies:
     BeautifulSoup: Employed for parsing HTML contents.
     autogen: Provides framework support for autonomous agents.
 """
-
+import time
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -51,7 +51,7 @@ chatbot = autogen.AssistantAgent(
     system_message="For crawling or scraping reddit, only use the functions you have been provided with. Reply TERMINATE when the task is done.",
     llm_config=llm_config,
     code_execution_config={
-         "use_docker": False,
+        "use_docker": False,
     },
 )
 
@@ -62,9 +62,10 @@ user_proxy = autogen.UserProxyAgent(
     human_input_mode="NEVER",
     max_consecutive_auto_reply=10,
     code_execution_config={
-         "use_docker": False,
+        "use_docker": False,
     },
 )
+
 
 def crawl_reddit_imp(url: str):
     """
@@ -123,8 +124,9 @@ def crawl_reddit_imp(url: str):
         paragraphs = comment.find_all('p', class_='')
         content = ' '.join([p.text.strip() for p in paragraphs])
         allcontent += "user " + author + " commented: " + content + "\n"
-    
+
     return allcontent
+
 
 def crawl_reddit_post_url_imp(keywords: str):
     """
@@ -144,20 +146,28 @@ def crawl_reddit_post_url_imp(keywords: str):
     url = "https://www.reddit.com/search/?q=" + keywords.replace(" ", "+")
     print("Crawling Reddit posts at: ", url)
     # Create a new instance of the Firefox driver
-    options = ChromeOptions()
-    options.add_argument("--window-size=1920,1080")
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument(
-        "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
-    driver = webdriver.Chrome(options=options)
+    try:
+        options = ChromeOptions()
+        options.add_argument("--window-size=1920,1080")
+        options.add_argument("--headless")
+        options.add_argument("--disable-gpu")
+        options.add_argument(
+            "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36")
+        driver = webdriver.Chrome(options=options)
 
-    # Load a URL
-    driver.get(url)
-    # Get the HTML content
-    html_content = driver.page_source
-    soup = BeautifulSoup(html_content, 'html.parser')
+        # Load a URL
+        driver.get(url)
 
+        time.sleep(3)
+
+        # Get the HTML content
+        html_content = driver.page_source
+
+        soup = BeautifulSoup(html_content, 'html.parser')
+
+    except Exception as e:
+        print("Error in crawling Reddit posts at: ", url)
+        print(e)
     # Now you can use the soup object to parse and manipulate the HTML content
     # For example, you can find elements by tag name, class, etc.
 
@@ -168,17 +178,26 @@ def crawl_reddit_post_url_imp(keywords: str):
 
     # Find all <p> elements and concatenate their content into a string
     links = soup.find_all('a')
+
+    for element in soup.find_all():
+        print("element:")
+        print(element.name)
+
     for link in links:
         if link.get('href').startswith("/r/") and "/comments/" in link.get('href'):
+            print("found link: ", link.get('href'))
             found_url = "https://www.reddit.com" + link.get('href')
             allcontent.append(found_url)
-    
+        else:
+            print("INVALID LINK??: ", link.get('href'))
+
     return list(set(allcontent))
+
 
 @user_proxy.register_for_execution()
 @chatbot.register_for_llm(description="scrawl and scrap reddit post content")
 def crawl_reddit(
-    url: Annotated[str, "link to the reddit post"],
+        url: Annotated[str, "link to the reddit post"],
 ) -> str:
     """
     Facilitates scraping of a specific Reddit post's content by invoking the `crawl_reddit_imp` function.
@@ -192,10 +211,11 @@ def crawl_reddit(
     """
     return crawl_reddit_imp(url)
 
+
 @user_proxy.register_for_execution()
 @chatbot.register_for_llm(description="get the link to the reddit posts")
 def crawl_reddit_post_url(
-    keywords: Annotated[str, "keywords to search for"],
+        keywords: Annotated[str, "keywords to search for"],
 ) -> str:
     """
     Facilitates the search of Reddit posts by keywords and retrieves their URLs by invoking the `crawl_reddit_post_url_imp` function.
@@ -209,17 +229,20 @@ def crawl_reddit_post_url(
     """
     return crawl_reddit_post_url_imp(keywords)
 
+
 print(chatbot.llm_config["tools"])
-    
+
+
 def reddit_analysis(task_description):
     with Cache.disk() as cache:
         # start the conversation
         res = user_proxy.initiate_chat(
-            chatbot, message="find reddit posts related to beekeeping and give me the summary", summary_method="reflection_with_llm", cache=cache
+            chatbot, message=task_description, summary_method="reflection_with_llm", cache=cache
         )
     return res.chat_history
 
+
 if __name__ == '__main__':
     # Example task
-    task_description = "Identify the best posts from subreddits talking about beekeeping products."
+    task_description = "find reddit posts related to beekeeping and give me the summary with the link to the posts"
     reddit_analysis(task_description)
