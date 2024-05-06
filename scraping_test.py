@@ -27,11 +27,15 @@ options.add_argument(
 # driver = webdriver.Chrome(options=options)
 
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-driver.get("https://www.google.com/search?q=dog&sca_esv=4a5015327b2804e5&sca_upv=1&rlz=1C1RXQR_enUS1041US1041&ei=1U84ZqCWBu2l5NoP5f2vgAo&ved=0ahUKEwjg1JWBjPiFAxXtElkFHeX-C6AQ4dUDCBA&uact=5&oq=dog&gs_lp=Egxnd3Mtd2l6LXNlcnAiA2RvZzINEC4YgAQYsQMYQxiKBTINEAAYgAQYsQMYQxiKBTINEAAYgAQYsQMYQxiKBTIKEAAYgAQYQxiKBTIKEAAYgAQYQxiKBTINEC4YgAQYsQMYQxiKBTILEAAYgAQYkgMYigUyCxAAGIAEGJIDGIoFMg0QABiABBhDGMkDGIoFMg0QLhiABBixAxhDGIoFMhwQLhiABBixAxhDGIoFGJcFGNwEGN4EGN8E2AECSKgQUIYGWKYPcAF4AZABAJgBRKABowKqAQE1uAEDyAEA-AEBmAIGoALCAsICChAAGLADGNYEGEfCAg0QABiABBiwAxhDGIoFwgITEC4YgAQYsAMYQxjIAxiKBdgBAcICDhAAGIAEGJECGLEDGIoFwgIHEAAYgAQYCsICDRAuGIAEGNEDGMcBGArCAgcQLhiABBgKwgIREC4YgAQYkQIY0QMYxwEYigXCAhcQLhiABBiRAhixAxjRAxiDARjHARiKBcICDhAuGIAEGLEDGIMBGNQCwgIOEC4YgAQYsQMYgwEYigXCAg4QLhiABBixAxjRAxjHAcICCxAAGIAEGLEDGIMBwgIREC4YgAQYsQMY0QMYgwEYxwHCAgUQABiABMICIBAuGIAEGJECGNEDGMcBGIoFGJcFGNwEGN4EGOAE2AECwgIQEC4YgAQY0QMYQxjHARiKBcICFhAuGIAEGLEDGNEDGEMYgwEYxwEYigXCAgoQLhiABBhDGIoFwgIfEC4YgAQY0QMYQxjHARiKBRiXBRjcBBjeBBjgBNgBApgDAIgGAZAGDLoGBAgBGAi6BgYIAhABGBSSBwE2oAfHVw&sclient=gws-wiz-serp")
+driver.get("https://www.reddit.com/search/?q=dog+food")
 
 time.sleep(5)
 
 html_content = driver.page_source
+
+with open("element.html", "w") as file:
+    file.write(html_content)
+
 soup = BeautifulSoup(html_content, 'html.parser')
 
 links = soup.find_all('a')
