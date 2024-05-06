@@ -11,7 +11,7 @@ options.add_argument("--window-size=1920,1080")
 options.add_argument("--headless")
 options.add_argument("--disable-gpu")
 options.add_argument(user_agent)
-driver = Driver(browser="chrome", headless=True, agent=ua)
+driver = Driver(browser="chrome", headless=True, agent=user_agent)
 driver.get("https://www.reddit.com/search/?q=dog+food")
 
 html_content = driver.page_source
