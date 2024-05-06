@@ -180,7 +180,7 @@ def crawl_reddit_post_url_imp(keywords: str):
 
     for element in soup.find_all():
         print("element:")
-        print(element)
+        print(element.name)
 
     for link in links:
         if link.get('href').startswith("/r/") and "/comments/" in link.get('href'):
