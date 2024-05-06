@@ -7,3 +7,4 @@ pyautogen>=0.2.3
 fastapi
 uvicorn
 seleniumbase
+webdriver-manager
