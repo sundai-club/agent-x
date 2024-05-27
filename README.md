@@ -1,6 +1,10 @@
 **Part of [Sundai Club](https://sundai.club/)**
 
-# Step 1: Define the LeaderAgent class
+# How to use
+run `python reddit_crawling_agent.py` from your terminal
+
+# How it Works
+## Step 1: Define the LeaderAgent class
 class LeaderAgent(ConversableAgent):
     def __init__(self, name, objective, tasks, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -13,7 +17,7 @@ class LeaderAgent(ConversableAgent):
         # and add them to the self.agents dictionary
         pass
 
-# Step 2: Define the CreativeDirectorAgent class
+## Step 2: Define the CreativeDirectorAgent class
 class CreativeDirectorAgent(ConversableAgent):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -22,7 +26,7 @@ class CreativeDirectorAgent(ConversableAgent):
         # Generate keywords for subreddit search
         pass
 
-# Step 3: Define the SubredditAgent class
+## Step 3: Define the SubredditAgent class
 class SubredditAgent(ConversableAgent):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -31,7 +35,7 @@ class SubredditAgent(ConversableAgent):
         # Find related subreddit links using the keywords
         pass
 
-# Step 4: Define the PostAgent class
+## Step 4: Define the PostAgent class
 class PostAgent(ConversableAgent):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -40,7 +44,7 @@ class PostAgent(ConversableAgent):
         # Scrape posts from the subreddit links
         pass
 
-# Step 5: Define the CommentAgent class
+## Step 5: Define the CommentAgent class
 class CommentAgent(ConversableAgent):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -49,7 +53,7 @@ class CommentAgent(ConversableAgent):
         # Find the most relevant comments and place them into a database
         pass
 
-# Step 6: Define the EvaluationAgent class
+## Step 6: Define the EvaluationAgent class
 class EvaluationAgent(ConversableAgent):
     def __init__(self, name, **kwargs):
         super().__init__(name=name, **kwargs)
@@ -58,16 +62,13 @@ class EvaluationAgent(ConversableAgent):
         # Determine why comments are relevant
         pass
 
-# Initialize your main leader agent
+## Initialize your main leader agent
 leader = LeaderAgent("Leader", objective="Find relevant subreddits and posts", tasks={...})
 
-# Your application code here
-# 1. The leader agent initiates the CreativeDirectorAgent to brainstorm keywords
-# 2. The CreativeDirectorAgent passes keywords to SubredditAgent to get subreddit links
-# 3. SubredditAgent passes links to PostAgent to scrape posts
-# 4. PostAgent passes scraped posts to CommentAgent to get comments
-# 5. CommentAgent passes comments to EvaluationAgent for relevance analysis
+### Your application code here
+ 1. The leader agent initiates the CreativeDirectorAgent to brainstorm keywords
+ 2. The CreativeDirectorAgent passes keywords to SubredditAgent to get subreddit links
+ 3. SubredditAgent passes links to PostAgent to scrape posts
+ 4. PostAgent passes scraped posts to CommentAgent to get comments
+ 5. CommentAgent passes comments to EvaluationAgent for relevance analysis
 
-# The code provided is an outline. Actual implementation would involve setting up
-# the logic within each agent's methods and ensuring communication between agents
-# follows the desired flow of your application logic.
